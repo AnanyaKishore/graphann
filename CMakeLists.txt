@@ -18,6 +18,7 @@ add_library(graphann_lib STATIC
     src/distance.cpp
     src/io_utils.cpp
     src/vamana_index.cpp
+    src/vamana_two_pass_index.cpp
 )
 target_include_directories(graphann_lib PUBLIC include)
 target_link_libraries(graphann_lib PUBLIC OpenMP::OpenMP_CXX)
