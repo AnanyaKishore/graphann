@@ -1,0 +1,67 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\title{Two-Pass Vamana: Implementation Cycles, Results, and Obstacles}
+
+\begin{document}
+\maketitle
+
+\section*{Baseline Algorithm}
+The baseline Vamana index builds a bounded-degree proximity graph using greedy search plus robust pruning, then answers ANN queries by graph traversal with candidate budget $L$. As $L$ increases, recall improves, but both distance computations and latency rise.
+
+\section*{Two-Pass Vamana}
+Two-pass Vamana runs graph construction twice: pass 1 creates a strong local structure, and pass 2 refines connectivity by re-traversing and re-pruning neighborhoods under the same degree constraints. The goal is not only higher recall, but better navigability so similar recall is reached with fewer comparisons and lower latency.
+
+\section*{Cycle-Style Comparison at $L\in\{10,50,100,200\}$}
+We compare implementation results:
+
+\subsection*{Baseline}
+\begin{center}
+\begin{tabular}{@{}rcccc@{}}
+\toprule
+$L$ & Recall@10 & Avg Dist Cmps & Avg Latency ($\mu$s) & P99 Latency ($\mu$s) \\
+\midrule
+10  & 0.7766 & 642.3  & 289.6  & 712.9 \\
+50  & 0.9667 & 1509.0 & 903.8  & 1476.4 \\
+100 & 0.9890 & 2435.6 & 1599.9 & 2816.4 \\
+200 & 0.9960 & 4045.1 & 3002.2 & 4371.2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Two-Pass Vamana)}
+\begin{center}
+\begin{tabular}{@{}rcccc@{}}
+\toprule
+$L$ & Recall@10 & Avg Dist Cmps & Avg Latency ($\mu$s) & P99 Latency ($\mu$s) \\
+\midrule
+10  & 0.7780 & 476.0  & 207.3  & 379.3 \\
+50  & 0.9595 & 1212.3 & 740.3  & 1169.1 \\
+100 & 0.9850 & 2018.6 & 1366.2 & 2264.9 \\
+200 & 0.9949 & 3433.3 & 2739.9 & 4505.9 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{Comparing Baseline and Two Pass}
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{At $L=10$, two-pass is better on both key axes}: recall is slightly higher, while average latency is lower.
+    \item \textbf{At $L=50,100,200$, baseline has a small recall edge}: the recall gap is modest (roughly $0.001$ to $0.008$ absolute), indicating near-equivalent quality.
+    \item \textbf{Latency advantage of two-pass persists at every compared $L$}: average latency is consistently lower for two-pass.
+    \item \textbf{Increasing $L$ raises recall for both methods with diminishing returns}: moving from $L=100$ to $L=200$ gives small recall gains but substantial latency growth.
+    \item \textbf{Latency--recall tradeoff favors two-pass operationally}: for almost the same recall at moderate/high $L$, two-pass usually delivers substantially lower query cost.
+\end{enumerate}
+
+\section*{Implementation Obstacles}
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Candidate-set explosion across two passes}: merging pass outputs tended to reintroduce near-duplicate neighbors, increasing compute without proportional recall gain.
+    \item \textbf{Diversity vs. nearest-distance tension in pruning}: keeping only closest edges hurt navigability, while keeping too many diverse long edges hurt speed.
+    \item \textbf{Maintaining graph invariants between passes}: degree bounds, duplicate filtering, and deterministic tie-breaking had to remain consistent or pass 2 amplified instability.
+    \item \textbf{Pass-2 traversal bias}: reusing similar entry behavior over-focused already dense regions, reducing improvements in weakly connected areas.
+    \item \textbf{AI-side debugging challenge}: it was difficult to separate true algorithmic bugs from parameter-coupling effects, so each change required a strict hypothesis$\rightarrow$measurement validation loop.
+\end{enumerate}
+
+\end{document}  

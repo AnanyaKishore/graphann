@@ -17,7 +17,8 @@ SIFT_TAR="$DATA_DIR/sift.tar.gz"
 BASE_FBIN="$DATA_DIR/sift_base.fbin"
 QUERY_FBIN="$DATA_DIR/sift_query.fbin"
 GT_IBIN="$DATA_DIR/sift_gt.ibin"
-INDEX_BIN="$DATA_DIR/sift_index.bin"
+BASELINE_INDEX_BIN="$DATA_DIR/sift_index_baseline.bin"
+TWO_PASS_INDEX_BIN="$DATA_DIR/sift_index_two_pass.bin"
 
 # ─── 1. Build the project ────────────────────────────────────────────────────
 echo "=== Step 1: Building the project ==="
@@ -56,18 +57,37 @@ else
 fi
 echo ""
 
-# ─── 4. Build the index ──────────────────────────────────────────────────────
-echo "=== Step 4: Building the Vamana index ==="
+# ─── 4. Build baseline and two-pass indexes ──────────────────────────────────
+echo "=== Step 4: Building baseline Vamana index ==="
 "$BUILD_DIR/build_index" \
     --data "$BASE_FBIN" \
-    --output "$INDEX_BIN" \
+    --output "$BASELINE_INDEX_BIN" \
+    --builder baseline \
     --R 32 --L 75 --alpha 1.2 --gamma 1.5
 echo ""
 
-# ─── 5. Search and evaluate ──────────────────────────────────────────────────
-echo "=== Step 5: Searching and evaluating recall ==="
+echo "=== Step 5: Building two-pass Vamana index ==="
+"$BUILD_DIR/build_index" \
+    --data "$BASE_FBIN" \
+    --output "$TWO_PASS_INDEX_BIN" \
+    --builder two-pass \
+    --R 32 --L 75 --alpha 1.2 --alpha1 1.0 --gamma 1.5 --seed-degree 8
+echo ""
+
+# ─── 6. Search and evaluate both indexes ─────────────────────────────────────
+echo "=== Step 6: Searching baseline index and evaluating recall ==="
 "$BUILD_DIR/search_index" \
-    --index "$INDEX_BIN" \
+    --index "$BASELINE_INDEX_BIN" \
+    --data "$BASE_FBIN" \
+    --queries "$QUERY_FBIN" \
+    --gt "$GT_IBIN" \
+    --K 10 \
+    --L 10,20,30,50,75,100,150,200
+echo ""
+
+echo "=== Step 7: Searching two-pass index and evaluating recall ==="
+"$BUILD_DIR/search_index" \
+    --index "$TWO_PASS_INDEX_BIN" \
     --data "$BASE_FBIN" \
     --queries "$QUERY_FBIN" \
     --gt "$GT_IBIN" \
