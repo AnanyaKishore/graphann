@@ -1,4 +1,5 @@
 Baseline
+```
 L     Recall@10   Avg Dist Cmps  Avg Latency (us)  P99 Latency (us)
 --------------------------------------------------------------------------
 10        0.7766           642.3             289.6             712.9
@@ -9,9 +10,10 @@ L     Recall@10   Avg Dist Cmps  Avg Latency (us)  P99 Latency (us)
 100        0.9890          2435.6            1599.9            2816.4
 150        0.9937          3270.6            2383.8            4935.8
 200        0.9960          4045.1            3002.2            4371.2
-
+```
 
 Two-Pass Vamana
+```
 === Search Results (K=10) ===
 L     Recall@10   Avg Dist Cmps  Avg Latency (us)  P99 Latency (us)
 --------------------------------------------------------------------------
@@ -23,3 +25,4 @@ L     Recall@10   Avg Dist Cmps  Avg Latency (us)  P99 Latency (us)
 100        0.9850          2018.6            1366.2            2264.9
 150        0.9917          2751.4            1984.8            3020.0
 200        0.9949          3433.3            2739.9            4505.9
+```
