@@ -1,6 +1,6 @@
 # ANN Result Comparison: Baseline vs Two-Pass Vamana
 
-## Most Important Points
+## Takeaways
 
 - Two-Pass Vamana is the better overall choice for practical ANN search: much lower latency and tail latency with only a small recall drop at most L values.
 - Recall@10 is very close between methods. Baseline is slightly higher for L >= 20, but gaps are small (largest gap about 1.0 percentage point at L=20).
@@ -17,6 +17,7 @@
 ## Raw Results
 
 Baseline Algorithm
+```
 === Search Results (K=10) ===
        L     Recall@10   Avg Dist Cmps  Avg Latency (us)  P99 Latency (us)
 --------------------------------------------------------------------------
@@ -28,8 +29,9 @@ Baseline Algorithm
      100        0.9892          2437.2            2437.0            7830.1
      150        0.9939          3272.1            3491.1            8633.0
      200        0.9961          4046.8            5099.8           13135.3
-
+```
 Two-Pass Vamana
+```
 === Search Results (K=10) ===
        L     Recall@10   Avg Dist Cmps  Avg Latency (us)  P99 Latency (us)
 --------------------------------------------------------------------------
@@ -41,3 +43,4 @@ Two-Pass Vamana
      100        0.9851          2018.8            1020.6            2503.1
      150        0.9917          2751.5            1472.0            2609.2
      200        0.9949          3433.7            1962.9            3202.9
+```
